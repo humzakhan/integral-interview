@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "target": "es6",
+      "noImplicitAny": true,
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "outDir": "./dist",
+      "baseUrl": ".",
+      "types": ["node"],
+      "paths": {
+          "*": [
+              "node_modules/*"
+          ],
+          "@base/*": [
+              "src/*"
+          ],
+          "@controllers/*": [
+              "src/controllers/*"
+          ]
+      },
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true
+  },
+  "include": [
+      "src/**/*"
+  ]
+}
