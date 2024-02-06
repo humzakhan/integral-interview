@@ -12,10 +12,7 @@ router
 
 router
   .route("/account/:accountId")
-  .get(AccountsController.getAccount);
-
-router
-  .route("/account/:accountId/wallet")
-  .put(AccountsController.addWalletToAccount);
+  .get(AccountsController.getAccount)
+  .put(AccountsController.updateAccount);
 
 export default router;

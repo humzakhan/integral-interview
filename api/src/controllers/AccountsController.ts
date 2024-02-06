@@ -7,17 +7,18 @@ import { logger } from '../middleware';
 import { accountService } from '../service'; 
 
 export const createAccount = catchAsync(async (req: Request, res: Response) => {
-  const { name } = req.body;
-  const newAccount: Account = { id: nanoid(), name: name, wallets: [] as string[] };
+  const { name, wallet } = req.body;
+  const newAccount: Account = { id: nanoid(), name, wallet };
   accountService.createAccount(newAccount);
   
-  logger.info(`Account created: ${newAccount.id}, name: ${newAccount.name}, wallet count: ${newAccount.wallets.length}`);
+  logger.info(`Account created: ${newAccount.id}, name: ${newAccount.name}, wallet: ${newAccount.wallet}`);
   res.status(httpStatus.CREATED).send({ message: newAccount });
 });
 
-export const addWalletToAccount = catchAsync(async (req: Request, res: Response) => { 
+export const updateAccount = catchAsync(async (req: Request, res: Response) => {
   const { accountId } = req.params;
-  const { walletAddresses } = req.body;
+  const { name, wallet } = req.body;
+
   const account = accountService.verifyAccountExists(accountId);
 
   if (!account) {
@@ -25,11 +26,13 @@ export const addWalletToAccount = catchAsync(async (req: Request, res: Response)
     return;
   }
 
-  accountService.addWalletsToAccount(accountId, walletAddresses);
+  account.name = name;
+  accountService.updateAccount(accountId, name, wallet);
 
-  logger.info(`Wallets added to account: ${accountId}, wallets: ${walletAddresses}`);
-  res.status(httpStatus.OK).send({ message: 'Wallets added to account' });
+  logger.info(`Account updated: ${account.id}, new name: ${account.name}, wallet: ${account.wallet}`);
+  res.status(httpStatus.OK).send({ message: account });
 });
+
 
 export const getAccount = catchAsync(async (req: Request, res: Response) => {
   const { accountId } = req.params;
@@ -40,7 +43,7 @@ export const getAccount = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-  logger.info(`Account retrieved: ${account.id}, name: ${account.name}, wallet count: ${account.wallets.length}`);
+  logger.info(`Account retrieved: ${account.id}, name: ${account.name}, wallet: ${account.wallet}`);
   res.status(httpStatus.OK).send({ message: account });
 });
 

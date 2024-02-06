@@ -7,27 +7,23 @@ class AccountService {
     this.accounts.push(account);
   }
 
-  getAccounts() {
+  getAccounts(): Account[] {
     return this.accounts;
   }
 
-  addWalletsToAccount(accountId: string, walletAddresses: string[]) {
+  verifyAccountExists(accountId: string): Account | null {
+    return this.accounts.find((account) => account.id === accountId);
+  }
+
+  updateAccount(accountId: string, name: string, wallet: string): Account {
     const account = this.verifyAccountExists(accountId);
 
     if (!account) {
-      return;
+      return null;
     }
 
-    const existingWallets = account.wallets;
-    const newWallets = walletAddresses.filter(
-      (wallet: string) => !existingWallets.includes(wallet)
-    );
-
-    account.wallets = [...existingWallets, ...newWallets];
-  }
-
-  verifyAccountExists(accountId: string) {
-    return this.accounts.find((account) => account.id === accountId);
+    account.name = name;
+    account.wallet = wallet;
   }
 }
 
