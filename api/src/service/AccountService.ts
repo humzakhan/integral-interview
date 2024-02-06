@@ -18,7 +18,6 @@ class AccountService {
     this.accounts[account.id] = account;
 
     if (wallet !== '') {
-      logger.info(JSON.stringify(account));
       this.syncTransactions(account.id, wallet);
     }
 
@@ -44,6 +43,12 @@ class AccountService {
     account.wallet = wallet;
 
     this.accounts[accountId] = account;
+
+    if (wallet !== '' && wallet !== account.wallet) {
+      this.syncTransactions(account.id, wallet);
+    }
+
+    return account;
   }
 
   getTransactions(accountId: string): Transaction[] {
