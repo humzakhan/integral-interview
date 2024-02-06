@@ -1,2 +1,3 @@
 import * as HealthController from "./HealthController";
-export { HealthController };
+import * as AccountsController from "./AccountsController";
+export { HealthController, AccountsController };
