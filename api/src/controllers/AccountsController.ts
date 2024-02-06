@@ -55,3 +55,9 @@ export const getAccountTransactions = catchAsync(async (req: Request, res: Respo
   logger.info(`Accounts retrieved: ${accounts.length}`);
   res.status(httpStatus.OK).send({ message: accounts });
 });
+
+export const getAccountTokenBalances = catchAsync(async (req: Request, res: Response) => {
+  const { accountId  } = req.params;
+  const balances = await accountService.getTokenBalances(accountId);
+  res.status(httpStatus.OK).send({ data: balances });
+});

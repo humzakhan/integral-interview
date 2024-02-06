@@ -1,6 +1,9 @@
-import { TokenMetadata, Transaction, TransactionType } from '../model';
+import { TokenBalance, TokenBalanceResponse, TokenMetadata, Transaction, TransactionType } from '../model';
 import { logger } from '../middleware';
 import { alchemy } from './AlchemyService';
+import { AccountTokenBalance } from '../model';
+
+
 
 class TransactionService {
   public async getOnchainTransactions(walletAddress: string, transactionType: TransactionType): Promise<Transaction[]> {
@@ -38,6 +41,24 @@ class TransactionService {
         };
       });
     }
+  }
+
+  public async getTokenBalances(walletAddress: string): Promise<AccountTokenBalance[]> {
+    let accountTokenBalances: AccountTokenBalance[] = [];
+    const balances: TokenBalanceResponse = await alchemy.core.getTokenBalances(walletAddress);
+    const nonZeroBalances = balances.tokenBalances.filter((token: TokenBalance) => {
+      return token.tokenBalance !== "0";
+    });
+    
+    for (let token of nonZeroBalances) {
+      let balance: number = parseInt(token.tokenBalance, 16);
+      const metadata: TokenMetadata = await alchemy.core.getTokenMetadata(token.contractAddress);
+      
+      balance = balance / Math.pow(10, metadata.decimals);
+      accountTokenBalances.push({ symbol: metadata.symbol, balance: balance.toFixed(2) } as AccountTokenBalance);
+    }
+
+    return accountTokenBalances;
   }
 }
 

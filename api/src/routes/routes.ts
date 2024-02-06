@@ -16,7 +16,11 @@ router
   .put(AccountsController.updateAccount);
 
 router
-  .route("account/:accountId/transactions")
+  .route("/account/:accountId/transactions")
   .get(AccountsController.getAccountTransactions);
+
+router
+  .route("/account/:accountId/balances")
+  .get(AccountsController.getAccountTokenBalances);
 
 export default router;

@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { logger } from "../middleware";
-import { Account, Transaction, TransactionType } from "../model";
+import { Account, AccountTokenBalance, Transaction, TransactionType } from "../model";
 import transactionService from "./TransactionService";
 
 
@@ -52,6 +52,17 @@ class AccountService {
     }
 
     return account.transactions;
+  }
+
+  async getTokenBalances(accountId: string): Promise<AccountTokenBalance[]> {
+    const account = this.verifyAccountExists(accountId);
+
+    if (!account) {
+      return null;
+    }
+
+    const balances = await transactionService.getTokenBalances(account.wallet);
+    return balances;
   }
 
   async syncTransactions(accountId: string, wallet: string): Promise<void> {
