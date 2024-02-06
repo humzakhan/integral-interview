@@ -1,15 +1,12 @@
-import { Account } from '../model';
 import { catchAsync } from '../utils';
 import { Response, Request } from 'express';
 import httpStatus from 'http-status';
-import { nanoid } from 'nanoid';
 import { logger } from '../middleware';
 import { accountService } from '../service'; 
 
 export const createAccount = catchAsync(async (req: Request, res: Response) => {
   const { name, wallet } = req.body;
-  const newAccount: Account = { id: nanoid(), name, wallet };
-  accountService.createAccount(newAccount);
+  const newAccount = accountService.createAccount(name, wallet);
   
   logger.info(`Account created: ${newAccount.id}, name: ${newAccount.name}, wallet: ${newAccount.wallet}`);
   res.status(httpStatus.CREATED).send({ message: newAccount });

@@ -1,7 +1,6 @@
-import { Transaction, TransactionType } from '../model';
-import { config } from '../config';
-import axios from 'axios';
+import { TokenMetadata, Transaction, TransactionType } from '../model';
 import { logger } from '../middleware';
+import { alchemy } from './AlchemyService';
 
 class TransactionService {
   public async getOnchainTransactions(walletAddress: string, transactionType: TransactionType): Promise<Transaction[]> {
@@ -19,21 +18,12 @@ class TransactionService {
     } else {
       params['fromAddress'] = walletAddress;
     }
-    
-    const response = await axios.post(`${config.providerUrl}/${config.providerApiKey}`, {
-      id: 1,
-      jsonrpc: "2.0",
-      method: "alchemy_getAssetTransfers",
-      params: [params]
-    }, {
-      headers: {
-        'accept': 'application/json',
-        'content-type': 'application/json'
-      }
-    });
 
-    if (response.data) {
-      return response.data.result.transfers.map((tx: any) => {
+    const response = await alchemy.core.getAssetTransfers(params);
+
+    if (response) {
+      logger.info(`Transactions retrieved count: ${response.transfers.length}`);
+      return response.transfers.map((tx: any) => {
         return {
           blockNumber: tx.blockNum,
           txHash: tx.hash,

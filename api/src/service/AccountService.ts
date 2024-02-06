@@ -1,3 +1,5 @@
+import { nanoid } from "nanoid";
+import { logger } from "../middleware";
 import { Account, Transaction, TransactionType } from "../model";
 import transactionService from "./TransactionService";
 
@@ -6,12 +8,21 @@ import transactionService from "./TransactionService";
 class AccountService {
   private accounts: { [key: string]: Account } = {};
 
-  createAccount(account: Account) {
+  createAccount(name: string, wallet: string): Account {
+    const account: Account = {
+      id: nanoid(),
+      name,
+      wallet
+    };
+
     this.accounts[account.id] = account;
 
-    if (account.wallet != null) {
-      this.syncTransactions(account.id);
+    if (wallet !== '') {
+      logger.info(JSON.stringify(account));
+      this.syncTransactions(account.id, wallet);
     }
+
+    return account;
   }
 
   getAccounts(): Account[] {
@@ -43,26 +54,31 @@ class AccountService {
     return account.transactions;
   }
 
-  async syncTransactions(accountId: string): Promise<void> {
-    const account = this.verifyAccountExists(accountId);
+  async syncTransactions(accountId: string, wallet: string): Promise<void> {
+    try {
+      const account = this.verifyAccountExists(accountId);
 
-    if (!account) {
-      return;
+      if (!account) {
+        return;
+      }
+
+      const onchainTransactionsPromise: Promise<Transaction[]> = 
+        transactionService.getOnchainTransactions(wallet, TransactionType.DEPOSIT);
+
+      const offchainTransactionsPromise: Promise<Transaction[]> = 
+        transactionService.getOnchainTransactions(wallet, TransactionType.WITHDRAW);
+
+      const [onchainTransactions, offchainTransactions] = await Promise.all([
+        onchainTransactionsPromise,
+        offchainTransactionsPromise,
+      ]);
+
+      account.transactions = [...onchainTransactions, ...offchainTransactions];
+      this.accounts[accountId] = account;
     }
-
-    const onchainTransactionsPromise: Promise<Transaction[]> = 
-      transactionService.getOnchainTransactions(accountId, TransactionType.DEPOSIT);
-      
-    const offchainTransactionsPromise: Promise<Transaction[]> = 
-      transactionService.getOnchainTransactions(accountId, TransactionType.WITHDRAW);
-
-    const [onchainTransactions, offchainTransactions] = await Promise.all([
-      onchainTransactionsPromise,
-      offchainTransactionsPromise,
-    ]);
-
-    account.transactions = [...onchainTransactions, ...offchainTransactions];
-    this.accounts[accountId] = account;
+    catch (error) {
+      logger.error(`Error syncing transactions for account ${accountId}: ${error}`);
+    }
   }
 }
 
