@@ -15,4 +15,8 @@ router
   .get(AccountsController.getAccount)
   .put(AccountsController.updateAccount);
 
+router
+  .route("account/:accountId/transactions")
+  .get(AccountsController.getAccountTransactions);
+
 export default router;

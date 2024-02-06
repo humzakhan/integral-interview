@@ -52,3 +52,9 @@ export const getAccounts = catchAsync(async (req: Request, res: Response) => {
   logger.info(`Accounts retrieved: ${accounts.length}`);
   res.status(httpStatus.OK).send({ message: accounts });
 });
+
+export const getAccountTransactions = catchAsync(async (req: Request, res: Response) => {
+  const accounts = accountService.getAccounts();
+  logger.info(`Accounts retrieved: ${accounts.length}`);
+  res.status(httpStatus.OK).send({ message: accounts });
+});

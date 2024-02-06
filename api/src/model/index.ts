@@ -1,2 +1,3 @@
 import { Account } from "./Account";
-export { Account };
+import { Transaction, TransactionType } from './Transaction';
+export { Account, Transaction, TransactionType };
