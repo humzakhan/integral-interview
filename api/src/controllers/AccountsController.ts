@@ -22,8 +22,7 @@ export const updateAccount = catchAsync(async (req: Request, res: Response) => {
     res.status(httpStatus.NOT_FOUND).send({ message: 'Account not found' });
     return;
   }
-
-  account.name = name;
+  
   accountService.updateAccount(accountId, name, wallet);
 
   logger.info(`Account updated: ${account.id}, new name: ${account.name}, wallet: ${account.wallet}`);

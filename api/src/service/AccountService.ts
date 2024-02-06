@@ -42,6 +42,8 @@ class AccountService {
 
     account.name = name;
     account.wallet = wallet;
+
+    this.accounts[accountId] = account;
   }
 
   getTransactions(accountId: string): Transaction[] {
