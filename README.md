@@ -8,6 +8,12 @@ All accounts are persisted in-memory.
 
 There's a rate limit of 100 requests per 15 minutes.
 
+## On Deposits and Withdraws
+
+I didn't spend much time going through Alchemy's API, but their `getAssetsTransfer` endpoint didn't seem to give me all the tx at once. I ended up making one request with `from` populate and one with `to` because if both are populated at the same time, their API seemed to assume transactions between the same wallet and returned nothing.
+
+I will look more into this but ideally I'd reduce the external request to one only.
+
 ## Run locally
 
 Ensure port `4041` is available on your machine. Rename `.env.sample` to `.env` and add Alchemy's API key.
